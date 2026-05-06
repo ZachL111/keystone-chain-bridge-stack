@@ -1,68 +1,40 @@
 # keystone-chain-bridge-stack
 
-`keystone-chain-bridge-stack` explores blockchain tooling in C. The repository keeps the core rule set compact, then surrounds it with examples that show how the decisions move.
+`keystone-chain-bridge-stack` explores blockchain tooling with a small C codebase and local fixtures. The technical goal is to implement a C blockchain tooling project for bridge policy evaluation, using deny and allow fixtures and explainable decision traces.
 
-## Keystone Chain Bridge Stack Notes
+## Why I Keep It Small
 
-The quickest review path is the verifier first, then the fixtures, then the operations note. That order makes it easy to see whether the code, data, and explanation still agree.
+The project exists to keep a narrow engineering decision visible and testable. For this repo, that decision is how event finality and settlement risk should influence a review result.
 
-## Implementation Notes
+## Keystone Chain Bridge Stack Review Notes
 
-The interesting part is the boundary between accepted and reviewed scenarios. Extended examples sit near that boundary so future edits can show whether the model became more permissive or more cautious. The C implementation keeps headers, source, and assertions separate so bounds and types are easy to review.
+Start with `proof depth` and `event finality`. Those cases create the widest score spread in this repo, so they are the best quick check when the model changes.
 
-## Why This Exists
+## Included Behavior
 
-The goal is to capture the core behavior in code and make the surrounding assumptions obvious. A reader should be able to run the verifier, open the fixtures, and understand why each decision was made.
+- `fixtures/domain_review.csv` adds cases for event finality and nonce pressure.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/keystone-chain-bridge-walkthrough.md` walks through the case spread.
+- The C code includes a review path for `proof depth` and `event finality`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Feature Notes
+## Internal Model
 
-- Uses fixture data to keep event replay changes visible in code review.
-- Includes extended examples for invariant checks, including `recovery` and `degraded`.
-- Documents settlement rules tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
+The implementation keeps the scoring rule plain: reward signal and confidence, preserve slack, penalize drag, then classify the result into a review lane.
 
-## Example Scenarios
+The C addition stays small enough to inspect in one sitting.
 
-The extended cases are not random smoke tests. `degraded` keeps pressure on the review path, while `recovery` shows the model when capacity and weight are strong enough to clear the threshold.
-
-## Code Tour
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-
-## Local Setup
-
-The only required setup is the local C toolchain. After cloning, stay in the repo root so fixture paths resolve correctly.
-
-## Try It
+## Try It Locally
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Validation
 
-## Tests
+The check exercises the source code and the review fixture. `recovery` is the high score at 237; `baseline` is the low score at 133.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Scope
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Boundaries
-
-This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
-
-## Roadmap
-
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add one more blockchain tooling fixture that focuses on a malformed or borderline input.
+The fixture set is small enough to audit by hand. The next useful expansion is malformed input coverage, not extra surface area.

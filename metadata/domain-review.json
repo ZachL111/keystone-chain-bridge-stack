@@ -1,0 +1,73 @@
+{
+  "repo": "keystone-chain-bridge-stack",
+  "language": "C",
+  "category": "Blockchain tooling",
+  "goal": "Implement a C blockchain tooling project for bridge policy evaluation, using deny and allow fixtures and explainable decision traces.",
+  "review_model": {
+    "terms": [
+      "event finality",
+      "nonce pressure",
+      "settlement risk",
+      "proof depth"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "event finality",
+      "signal": 40,
+      "slack": 50,
+      "drag": 24,
+      "confidence": 75,
+      "score": 133,
+      "lane": "watch"
+    },
+    {
+      "name": "stress",
+      "focus": "nonce pressure",
+      "signal": 43,
+      "slack": 50,
+      "drag": 19,
+      "confidence": 65,
+      "score": 144,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "settlement risk",
+      "signal": 81,
+      "slack": 52,
+      "drag": 13,
+      "confidence": 50,
+      "score": 225,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "proof depth",
+      "signal": 89,
+      "slack": 39,
+      "drag": 17,
+      "confidence": 71,
+      "score": 237,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "event finality",
+      "signal": 57,
+      "slack": 54,
+      "drag": 32,
+      "confidence": 64,
+      "score": 136,
+      "lane": "watch"
+    }
+  ]
+}
